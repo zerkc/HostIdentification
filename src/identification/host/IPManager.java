@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author root
+ * @author GustavoG
  */
 public class IPManager {
 

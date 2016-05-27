@@ -24,10 +24,11 @@ public class IdentificationHost {
 
     private final ArrayList<String> ListaDeIp = new ArrayList();
     private boolean waitFor = false;
+    private int timeout = 300;
 
     public boolean isExistRed(String host) {
         try {
-            if (InetAddress.getByName(host).isReachable(300)) {
+            if (InetAddress.getByName(host).isReachable(timeout)) {
                 return true;
             }
         } catch (UnknownHostException e4) {
@@ -72,14 +73,13 @@ public class IdentificationHost {
             @Override
             public void run() {
                 int contador = 0;
-                int CantidadDeThread = Thread.activeCount();
-
+                int cantidadMaxima = Thread.activeCount();
                 while (true) {
-                    if (Thread.activeCount() <= CantidadDeThread+20) {
+                    if (Thread.activeCount() <= cantidadMaxima + 20) {
                         if (conexiones.size() > contador) {
                             conexiones.get(contador).start();
                             contador++;
-                        } else {
+                        } else if (Thread.activeCount() == cantidadMaxima) {
                             waitFor = false;
                             break;
                         }
@@ -99,6 +99,9 @@ public class IdentificationHost {
     }
 
     public boolean isService(String host, int port) {
+        if (host == null) {
+            return false;
+        }
         try {
             final Socket s = new Socket();
             SocketAddress sockaddr = new InetSocketAddress(host, port);
@@ -113,11 +116,21 @@ public class IdentificationHost {
         return ListaDeIp;
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
     public static void main(String[] args) throws java.net.UnknownHostException, IOException {
         IdentificationHost I = new IdentificationHost();
+//        I.setTimeout(15000);
         I.identificar_red();
         I.waitFor();
-        System.out.println(I.getService(I.getListaDeIp(), 8080));
+        System.out.println(I.getListaDeIp().size());
+//        System.out.println(I.getService(I.getListaDeIp(), 8080));
 
     }
 

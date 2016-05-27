@@ -72,9 +72,10 @@ public class IdentificationHost {
             @Override
             public void run() {
                 int contador = 0;
+                int CantidadDeThread = Thread.activeCount();
 
                 while (true) {
-                    if (Thread.activeCount() <= 11) {
+                    if (Thread.activeCount() <= CantidadDeThread+20) {
                         if (conexiones.size() > contador) {
                             conexiones.get(contador).start();
                             contador++;
@@ -87,17 +88,17 @@ public class IdentificationHost {
             }
         }.start();
     }
-    
-    public String getService(List<String> address,int port){
+
+    public String getService(List<String> address, int port) {
         for (String addres : address) {
-            if(isService(addres, port)){
+            if (isService(addres, port)) {
                 return addres;
             }
         }
         return null;
     }
 
-    public boolean isService(String host,int port) {
+    public boolean isService(String host, int port) {
         try {
             final Socket s = new Socket();
             SocketAddress sockaddr = new InetSocketAddress(host, port);
@@ -111,13 +112,13 @@ public class IdentificationHost {
     public ArrayList<String> getListaDeIp() {
         return ListaDeIp;
     }
-    
+
     public static void main(String[] args) throws java.net.UnknownHostException, IOException {
         IdentificationHost I = new IdentificationHost();
         I.identificar_red();
         I.waitFor();
         System.out.println(I.getService(I.getListaDeIp(), 8080));
-        
+
     }
 
 }
